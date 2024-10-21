@@ -1,4 +1,5 @@
 library(plumber)
+library(lubridate)
 
 #* @apiTitle API para regressão linear.
 #* @apiDescription Essa API tem como objetivo aplicar regressão em um conjunto de dados pré existente.
@@ -14,21 +15,10 @@ fit = lm(y ~ x + grupo, data = dados)
 #* @param y parametro y
 #* @post /registro
 function(x, grupo, y) {
-  df = data.frame(x = as.double(x), grupo = as.character(grupo), y = as.double(y), momento_registro = lubridate::now(tzone = "America/Sao_Paulo"))
+  df = data.frame(x = as.double(x), grupo = as.character(grupo), y = as.double(y), momento_registro = now())
   dados = bind_rows(dados, df)
   write_csv(dados, "dados_regressao.csv")
   print("Usuario cadastrado")
-}
-
-#* Inferencias Gráfico
-#* @serializer png
-#* @get /grafico
-function() {
-  g1 = dados %>% 
-    ggplot(aes(x = x, y = y, col = grupo)) + 
-    geom_point() +
-    geom_smooth(method = "lm", se = FALSE, formula = "y ~ x")
-  plot(g1)
 }
 
 #* Deletar registros
@@ -63,7 +53,18 @@ function(l, x, grupo, y) {
   print("Registro modificado com sucesso.")
 }
 
-#* Residuos
+#* Inferências Gráfico
+#* @serializer png
+#* @get /grafico
+function() {
+  g1 = dados %>% 
+    ggplot(aes(x = x, y = y, col = grupo)) + 
+    geom_point() +
+    geom_smooth(method = "lm", se = FALSE, formula = "y ~ x")
+  plot(g1)
+}
+
+#* Resíduos
 #* @serializer json
 #* @get /residuos
 function() {
@@ -88,17 +89,17 @@ function() {
   qqline(fit$residuals)
 }
 
-#* significancia estatistica
+#* Significância estatistica
 #* @serializer json
 #* @get /significancia
 function() {
   coef(summary(fit))
 }
 
-#* Predicao
+#* Predição
 #* @serializer json
 #* @param string Lista em formato JSON para previsão.
-#* @post /predicao
+#* @get /predicao
 function(string) {
   data = jsonlite::fromJSON(string)
   df = data.frame(x = as.double(data$x), grupo = data$grupo)

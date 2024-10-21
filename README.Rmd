@@ -14,7 +14,7 @@ Adiciona um novo registro ao conjunto de dados.
 **Parâmetros:**
 
 - x: Valor do parâmetro x.
-- grupo: Valor do parâmetro grupo.
+- grupo: Valor do parâmetro grupo (Letra referente ao grupo).
 - y: Valor da variável dependente y.
 
 ## DELETE /deletar_registro
@@ -31,7 +31,7 @@ Modifica um registro existente na tabela de dados.
 
 - l: Número da linha a ser modificada.
 - x: Novo valor do parâmetro x.
-- grupo: Novo valor do parâmetro grupo.
+- grupo: Novo valor do parâmetro grupo (Letra referente ao grupo).
 - y: Novo valor do parâmetro y.
 
 ## GET /grafico
@@ -44,7 +44,35 @@ Retorna os resíduos do modelo ajustado.
 Gera gráficos dos resíduos padronizados, histograma e Q-Q plot.
 
 ## GET /significancia
-Retorna a tabela de coeficientes com significância estatística.
+Retorna a tabela de coeficientes com significância estatística no formato Json a seguir:
+
+[
+  [
+    valor $\beta_0$,
+    std. error de $\beta_0$,
+    t valor de $\beta_0$,
+    Pvalor de $\beta_0$
+  ],
+  [
+    valor $\beta_1$,
+    std. error de $\beta_1$,
+    t valor de $\beta_1$,
+    Pvalor de $\beta_1$
+  ],
+  [
+    valor $\beta_2$,
+    std. error de $\beta_2$,
+    t valor de $\beta_2$,
+    Pvalor de $\beta_2$
+  ],
+  $\dots$
+  ,[
+    valor $\beta_n$,
+    std. error de $\beta_n$,
+    t valor de $\beta_n$,
+    Pvalor de $\beta_n$
+  ]
+]
 
 ## POST /predicao
 Recebe uma lista em formato JSON com novos dados e retorna as predições.
@@ -52,3 +80,5 @@ Recebe uma lista em formato JSON com novos dados e retorna as predições.
 **Parâmetros:**
 
 - string: JSON contendo x e grupo para realizar predições.
+
+{"x":[1,2,3],"grupo":["A","B","C"]}
